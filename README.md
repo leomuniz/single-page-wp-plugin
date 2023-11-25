@@ -32,3 +32,15 @@ email (string - email)
 rating (int)
 comment (string)
 ```
+
+## Screenshots
+
+### Insert form
+
+<img width="989" alt="image" src="https://github.com/leomuniz/single-page-wp-plugin/assets/4562945/a6ef3378-8a00-4450-a394-6e026a1ebab3">
+
+### View entries and search
+
+<img width="1021" alt="image" src="https://github.com/leomuniz/single-page-wp-plugin/assets/4562945/d3b404db-9f91-493d-843d-cdd0bb8d2293">
+
+<img width="994" alt="image" src="https://github.com/leomuniz/single-page-wp-plugin/assets/4562945/6b0cc064-c63c-4b22-a2ed-29a7b5f5e983">
