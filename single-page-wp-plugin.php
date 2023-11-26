@@ -135,21 +135,7 @@ function sp_wp_plugin_enqueue_styles() {
  */
 function sp_wp_plugin_shortcode_display_form() {
 
-	if ( ! empty( $_POST ) && isset( $_POST['sp_wp_plugin_name'] ) ) {
-
-		if ( empty( $_POST['_wp_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wp_nonce'] ) ), 'sp_wp_plugin_nonce_' . get_the_ID() ) ) {
-			die( esc_html( __( 'Something went wrong.', 'single-page-wp-plugin' ) ) );
-		}
-
-		$data = array(
-			'name'    => isset( $_POST['sp_wp_plugin_name'] ) ? sanitize_text_field( wp_unslash( $_POST['sp_wp_plugin_name'] ) ) : '',
-			'email'   => isset( $_POST['sp_wp_plugin_email'] ) ? sanitize_email( wp_unslash( $_POST['sp_wp_plugin_email'] ) ) : '',
-			'rating'  => isset( $_POST['sp_wp_plugin_rating'] ) ? absint( $_POST['sp_wp_plugin_rating'] ) : '',
-			'comment' => isset( $_POST['sp_wp_plugin_comment'] ) ? sanitize_text_field( wp_unslash( $_POST['sp_wp_plugin_comment'] ) ) : '',
-		);
-
-		$inserted = sp_wp_plugin_insert_data( $data );
-	}
+	$inserted = sp_wp_plugin_process_form_submission();
 
 	ob_start();
 
@@ -185,6 +171,32 @@ function sp_wp_plugin_shortcode_display_form() {
 
 
 /**
+ * Check the new review form submission and process the $_POST data.
+ *
+ * @since 1.0.0
+ */
+function sp_wp_plugin_process_form_submission() {
+
+	if ( ! empty( $_POST ) && isset( $_POST['sp_wp_plugin_name'] ) ) {
+
+		if ( empty( $_POST['_wp_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wp_nonce'] ) ), 'sp_wp_plugin_nonce_' . get_the_ID() ) ) {
+			die( esc_html( __( 'Something went wrong.', 'single-page-wp-plugin' ) ) );
+		}
+
+		$data = array(
+			'name'    => ! empty( $_POST['sp_wp_plugin_name'] ) ? sanitize_text_field( wp_unslash( $_POST['sp_wp_plugin_name'] ) ) : '',
+			'email'   => ! empty( $_POST['sp_wp_plugin_email'] ) ? sanitize_email( wp_unslash( $_POST['sp_wp_plugin_email'] ) ) : '',
+			'rating'  => ! empty( $_POST['sp_wp_plugin_rating'] ) ? absint( $_POST['sp_wp_plugin_rating'] ) : '',
+			'comment' => ! empty( $_POST['sp_wp_plugin_comment'] ) ? sanitize_text_field( wp_unslash( $_POST['sp_wp_plugin_comment'] ) ) : '',
+		);
+
+		return sp_wp_plugin_insert_data( $data );
+	}
+
+	return false;
+}
+
+/**
  * Shortcode [sp_wp_display_form] to display a list with the data in the custom table.
  * It also process incoming $_POST when searching for an entry.
  *
@@ -192,28 +204,13 @@ function sp_wp_plugin_shortcode_display_form() {
  */
 function sp_wp_plugin_shortcode_display_list() {
 
-	$search_query = '';
-
-	if ( isset( $_POST['sp_wp_plugin_q'] ) ) {
-
-		if ( empty( $_POST['_wp_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wp_nonce'] ) ), 'sp_wp_plugin_search_nonce_' . get_the_ID() ) ) {
-			die( esc_html( __( 'Something went wrong.', 'single-page-wp-plugin' ) ) );
-		}
-
-		$search_query = trim( sanitize_text_field( wp_unslash( $_POST['sp_wp_plugin_q'] ) ) );
-	}
-
-	$data = sp_wp_plugin_get_my_table_data( 0, 10, 'id', 'desc', $search_query );
+	$get_entries = sp_wp_plugin_get_entries();
 
 	ob_start();
 
 	?>
-	<?php if ( ! count( $data ) ) : ?>
-		<?php if ( empty( $search_query ) ) : ?> 
-			<h4><?php esc_html_e( 'There are no reviews yet!', 'single-page-wp-plugin' ); ?></h4>
-		<?php else : ?>
-			<h4><?php esc_html_e( 'No reviews found!', 'single-page-wp-plugin' ); ?></h4>
-		<?php endif; ?>
+	<?php if ( empty( $get_entries['result'] ) ) : ?>
+		<h4><?php esc_html_e( 'There are no reviews yet!', 'single-page-wp-plugin' ); ?></h4>
 	<?php else : ?>
 		<table>
 			<thead>
@@ -240,7 +237,7 @@ function sp_wp_plugin_shortcode_display_list() {
 				<?php wp_nonce_field( 'sp_wp_plugin_search_nonce_' . get_the_ID(), '_wp_nonce' ); ?>
 
 				<label for="search"><?php esc_html_e( 'Search', 'single-page-wp-plugin' ); ?>:</label>
-				<input type="text" id="search" name="sp_wp_plugin_q" placeholder="<?php esc_attr_e( 'Enter text', 'single-page-wp-plugin' ); ?>" value="<?php echo esc_attr( $search_query ); ?>">
+				<input type="text" id="search" name="sp_wp_plugin_q" placeholder="<?php esc_attr_e( 'Enter text', 'single-page-wp-plugin' ); ?>" value="<?php echo esc_attr( $get_entries['search_query'] ); ?>">
 			</fieldset>
 
 			<input type="submit" value="<?php esc_attr_e( 'Search', 'single-page-wp-plugin' ); ?>">
@@ -251,6 +248,29 @@ function sp_wp_plugin_shortcode_display_list() {
 	return ob_get_clean();
 }
 
+/**
+ * Get table entries possibly filtered by $_POST search query.
+ *
+ * @since 1.0.0
+ */
+function sp_wp_plugin_get_entries() {
+
+	$search_query = '';
+
+	if ( isset( $_POST['sp_wp_plugin_q'] ) ) {
+
+		if ( empty( $_POST['_wp_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wp_nonce'] ) ), 'sp_wp_plugin_search_nonce_' . get_the_ID() ) ) {
+			die( esc_html( __( 'Something went wrong.', 'single-page-wp-plugin' ) ) );
+		}
+
+		$search_query = trim( sanitize_text_field( wp_unslash( $_POST['sp_wp_plugin_q'] ) ) );
+	}
+
+	return array(
+		'search_query' => $search_query,
+		'result'       => sp_wp_plugin_get_my_table_data( 0, 10, 'id', 'desc', $search_query ),
+	);
+}
 
 /**
  * Shortcode [sp_wp_display_form] to display a list with the data in the custom table.
