@@ -207,7 +207,7 @@ function sp_wp_plugin_shortcode_display_list() {
 	do_action( 'sp_wp_plugin_before_display_data_table' );
 
 	?>
-	<?php if ( empty( $get_entries['result'] ) ) : ?>
+	<?php if ( empty( $get_entries['result'] ) && empty( $get_entries['search_query'] ) ) : ?>
 		<h4><?php esc_html_e( 'There are no reviews yet!', 'single-page-wp-plugin' ); ?></h4>
 	<?php else : ?>
 		<table>
@@ -219,12 +219,19 @@ function sp_wp_plugin_shortcode_display_list() {
 				</tr>
 			</thead>
 			<tbody>
-				<?php foreach ( $get_entries['result'] as $review ) : ?>
-					<tr> 
-						<td><?php echo esc_html( $review->name ); ?></td>
-						<td><?php echo esc_html( $review->rating ); ?></td>
-						<td><?php echo esc_html( $review->comment ); ?></td>
-				<?php endforeach; ?>
+				<?php if ( empty( $get_entries['result'] ) ) : ?>
+					<tr>
+						<td colspane="3">No reviews found!</td>
+					</tr>
+				<?php else : ?>
+					<?php foreach ( $get_entries['result'] as $review ) : ?>
+						<tr> 
+							<td><?php echo esc_html( $review->name ); ?></td>
+							<td><?php echo esc_html( $review->rating ); ?></td>
+							<td><?php echo esc_html( $review->comment ); ?></td>
+						</tr>
+					<?php endforeach; ?>
+				<?php endif; ?>
 			</tbody>
 		</table>
 
