@@ -81,14 +81,7 @@ function sp_wp_plugin_maybe_create_table() {
 	global $wpdb;
 
 	$tablename       = $wpdb->prefix . SP_WP_PLUGIN_TABLENAME;
-	$charset_collate = '';
-
-	if ( ! empty( $wpdb->charset ) ) {
-		$charset_collate .= "DEFAULT CHARACTER SET $wpdb->charset";
-	}
-	if ( ! empty( $wpdb->collate ) ) {
-		$charset_collate .= " COLLATE $wpdb->collate";
-	}
+	$charset_collate = $wpdb->get_charset_collate();
 
 	$sql = "CREATE TABLE IF NOT EXISTS {$tablename} (
 		id bigint(20) NOT NULL AUTO_INCREMENT,
