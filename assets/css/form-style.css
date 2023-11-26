@@ -35,3 +35,8 @@ input[type="submit"] {
 input[type="submit"]:hover {
 	background-color: #45a049;
 }
+
+p.sp_wp_plugin_error_message {
+	color:tomato;
+	margin-bottom:20px;
+}

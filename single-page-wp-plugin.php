@@ -137,6 +137,11 @@ function sp_wp_plugin_shortcode_display_form() {
 		<p><?php esc_html_e( 'Thank you for submitting your review!', 'single-page-wp-plugin' ); ?></p>
 	<?php else : ?>
 		<?php do_action( 'sp_wp_plugin_before_display_form' ); ?>
+
+		<?php if ( false === $inserted ) : ?>
+			<p class="sp_wp_plugin_error_message"><?php esc_html_e( 'There was an error on your submission. Please try again.', 'single-page-wp-plugin' ); ?></p>
+		<?php endif; ?>
+
 		<form action="" method="POST">
 			<fieldset>
 				<legend><?php esc_html_e( 'Submit a Review', 'single-page-wp-plugin' ); ?></legend>
@@ -188,7 +193,7 @@ function sp_wp_plugin_process_form_submission() {
 		return sp_wp_plugin_insert_data( $data );
 	}
 
-	return false;
+	return null;
 }
 
 /**
