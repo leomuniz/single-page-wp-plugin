@@ -143,6 +143,7 @@ function sp_wp_plugin_shortcode_display_form() {
 	<?php if ( ! empty( $inserted ) ) : ?>
 		<p><?php esc_html_e( 'Thank you for submitting your review!', 'single-page-wp-plugin' ); ?></p>
 	<?php else : ?>
+		<?php do_action( 'sp_wp_plugin_before_display_form' ); ?>
 		<form action="" method="POST">
 			<fieldset>
 				<legend><?php esc_html_e( 'Submit a Review', 'single-page-wp-plugin' ); ?></legend>
@@ -163,6 +164,7 @@ function sp_wp_plugin_shortcode_display_form() {
 
 			<input type="submit" value="<?php esc_attr_e( 'Submit Review', 'single-page-wp-plugin' ); ?>">
 		</form>
+		<?php do_action( 'sp_wp_plugin_after_display_form' ); ?>
 	<?php endif; ?>
 	<?php
 
@@ -205,8 +207,11 @@ function sp_wp_plugin_process_form_submission() {
 function sp_wp_plugin_shortcode_display_list() {
 
 	$get_entries = sp_wp_plugin_get_entries();
+	$get_entries = apply_filters( 'sp_wp_plugin_data_entries', $get_entries );
 
 	ob_start();
+
+	do_action( 'sp_wp_plugin_before_display_data_table' );
 
 	?>
 	<?php if ( empty( $get_entries['result'] ) ) : ?>
@@ -221,7 +226,7 @@ function sp_wp_plugin_shortcode_display_list() {
 				</tr>
 			</thead>
 			<tbody>
-				<?php foreach ( $data as $review ) : ?>
+				<?php foreach ( $get_entries['result'] as $review ) : ?>
 					<tr> 
 						<td><?php echo( esc_html( $review->name ) ); ?></td>
 						<td><?php echo( esc_html( $review->rating ) ); ?></td>
@@ -229,6 +234,8 @@ function sp_wp_plugin_shortcode_display_list() {
 				<?php endforeach; ?>
 			</tbody>
 		</table>
+
+		<?php do_action( 'sp_wp_plugin_between_data_table_and_search_form' ); ?>
 
 		<form action="" method="POST">
 			<fieldset>
@@ -244,6 +251,8 @@ function sp_wp_plugin_shortcode_display_list() {
 		</form>
 	<?php endif; ?>
 	<?php
+
+	do_action( 'sp_wp_plugin_after_display_data_table' );
 
 	return ob_get_clean();
 }
@@ -340,12 +349,18 @@ function sp_wp_plugin_insert_data( $data ) {
 		$data['date_modified'] = current_time( 'mysql' );
 	}
 
+	$data = apply_filters( 'sp_wp_plugin_insert_data', $data );
+
+	do_action( 'sp_wp_plugin_before_insert_data', $data );
+
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	$result = $wpdb->insert(
 		$wpdb->prefix . SP_WP_PLUGIN_TABLENAME,
 		$data,
 		array( '%s', '%s', '%d', '%s', '%s', '%s' )
 	);
+
+	do_action( 'sp_wp_plugin_after_insert_data', $data );
 
 	return ( false !== $result );
 }
