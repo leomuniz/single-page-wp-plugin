@@ -228,9 +228,9 @@ function sp_wp_plugin_shortcode_display_list() {
 			<tbody>
 				<?php foreach ( $get_entries['result'] as $review ) : ?>
 					<tr> 
-						<td><?php echo( esc_html( $review->name ) ); ?></td>
-						<td><?php echo( esc_html( $review->rating ) ); ?></td>
-						<td><?php echo( esc_html( $review->comment ) ); ?></td>
+						<td><?php echo esc_html( $review->name ); ?></td>
+						<td><?php echo esc_html( $review->rating ); ?></td>
+						<td><?php echo esc_html( $review->comment ); ?></td>
 				<?php endforeach; ?>
 			</tbody>
 		</table>
