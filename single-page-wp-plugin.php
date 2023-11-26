@@ -142,16 +142,16 @@ function sp_wp_plugin_shortcode_display_form() {
 				<legend><?php esc_html_e( 'Submit a Review', 'single-page-wp-plugin' ); ?></legend>
 				<?php wp_nonce_field( 'sp_wp_plugin_nonce_' . get_the_ID(), '_wp_nonce' ); ?>
 
-				<label for="name"><?php esc_html_e( 'Name', 'single-page-wp-plugin' ); ?>:</label>
+				<label for="name"><?php esc_html_e( 'Name', 'single-page-wp-plugin' ); ?>*</label>
 				<input type="text" id="name" name="sp_wp_plugin_name" placeholder="<?php esc_attr_e( 'Enter your name', 'single-page-wp-plugin' ); ?>" required>
 
-				<label for="email"><?php esc_html_e( 'Email', 'single-page-wp-plugin' ); ?>:</label>
+				<label for="email"><?php esc_html_e( 'Email', 'single-page-wp-plugin' ); ?>*</label>
 				<input type="email" id="email" name="sp_wp_plugin_email" placeholder="<?php esc_attr_e( 'Enter your e-mail', 'single-page-wp-plugin' ); ?>" required>
 
-				<label for="rating"><?php esc_html_e( 'Rating', 'single-page-wp-plugin' ); ?> (1 to 5):</label>
+				<label for="rating"><?php esc_html_e( 'Rating', 'single-page-wp-plugin' ); ?>* (1 to 5)</label>
 				<input type="number" id="rating" name="sp_wp_plugin_rating" min="1" max="5" placeholder="<?php esc_attr_e( 'Enter your rating between 1 and 5', 'single-page-wp-plugin' ); ?>" required>
 
-				<label for="comment"><?php esc_html_e( 'Comment', 'single-page-wp-plugin' ); ?>:</label>
+				<label for="comment"><?php esc_html_e( 'Comment', 'single-page-wp-plugin' ); ?></label>
 				<textarea id="comment" name="sp_wp_plugin_comment" rows="4" placeholder="<?php esc_attr_e( 'Enter your comment', 'single-page-wp-plugin' ); ?>"></textarea>
 			</fieldset>
 
@@ -225,7 +225,7 @@ function sp_wp_plugin_shortcode_display_list() {
 					</tr>
 				<?php else : ?>
 					<?php foreach ( $get_entries['result'] as $review ) : ?>
-						<tr> 
+						<tr>
 							<td><?php echo esc_html( $review->name ); ?></td>
 							<td><?php echo esc_html( $review->rating ); ?></td>
 							<td><?php echo esc_html( $review->comment ); ?></td>
