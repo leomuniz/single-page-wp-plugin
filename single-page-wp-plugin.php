@@ -18,7 +18,6 @@
  * Author URI: https://leomuniz.dev
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
- * Update URI: https://leomuniz.dev
  * Text Domain: single-page-wp-plugin
  * Domain Path: /languages
  */
@@ -226,7 +225,7 @@ function sp_wp_plugin_shortcode_display_list() {
 			<tbody>
 				<?php if ( empty( $get_entries['result'] ) ) : ?>
 					<tr>
-						<td colspane="3">No reviews found!</td>
+						<td colspan="3">No reviews found!</td>
 					</tr>
 				<?php else : ?>
 					<?php foreach ( $get_entries['result'] as $review ) : ?>
