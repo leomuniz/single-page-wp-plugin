@@ -135,7 +135,14 @@ function sp_wp_plugin_shortcode_display_form() {
 	<?php if ( ! empty( $inserted ) ) : ?>
 		<p><?php esc_html_e( 'Thank you for submitting your review!', 'single-page-wp-plugin' ); ?></p>
 	<?php else : ?>
-		<?php do_action( 'sp_wp_plugin_before_display_form' ); ?>
+		<?php
+			/**
+			 * Executes before displaying the form shortcode sp_wp_display_list.
+			 *
+			 * @since 1.0.0
+			 */
+			do_action( 'sp_wp_plugin_before_display_form' );
+		?>
 
 		<?php if ( false === $inserted ) : ?>
 			<p class="sp_wp_plugin_error_message"><?php esc_html_e( 'There was an error on your submission. Please try again.', 'single-page-wp-plugin' ); ?></p>
@@ -161,7 +168,15 @@ function sp_wp_plugin_shortcode_display_form() {
 
 			<input type="submit" value="<?php esc_attr_e( 'Submit Review', 'single-page-wp-plugin' ); ?>">
 		</form>
-		<?php do_action( 'sp_wp_plugin_after_display_form' ); ?>
+
+		<?php
+			/**
+			 * Executes after displaying the form shortcode sp_wp_display_form.
+			 *
+			 * @since 1.0.0
+			 */
+			do_action( 'sp_wp_plugin_after_display_form' );
+		?>
 	<?php endif; ?>
 	<?php
 
@@ -204,10 +219,24 @@ function sp_wp_plugin_process_form_submission() {
 function sp_wp_plugin_shortcode_display_list() {
 
 	$get_entries = sp_wp_plugin_get_entries();
+
+	/**
+	 * Filters the data entries after fetching them from the database and before the output to the browser.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array     $data The data.
+	 * @param int|false $id   The insert ID, or false on error.
+	 */
 	$get_entries = apply_filters( 'sp_wp_plugin_data_entries', $get_entries );
 
 	ob_start();
 
+	/**
+	 * Executes before displaying the table output in the shotrcode sp_wp_display_list.
+	 *
+	 * @since 1.0.0
+	 */
 	do_action( 'sp_wp_plugin_before_display_data_table' );
 
 	?>
@@ -239,7 +268,14 @@ function sp_wp_plugin_shortcode_display_list() {
 			</tbody>
 		</table>
 
-		<?php do_action( 'sp_wp_plugin_between_data_table_and_search_form' ); ?>
+		<?php
+			/**
+			 * Executes between displaying the table output and the search form in the shotrcode sp_wp_display_list.
+			 *
+			 * @since 1.0.0
+			 */
+			do_action( 'sp_wp_plugin_between_data_table_and_search_form' );
+		?>
 
 		<form action="" method="POST">
 			<fieldset>
@@ -256,6 +292,11 @@ function sp_wp_plugin_shortcode_display_list() {
 	<?php endif; ?>
 	<?php
 
+	/**
+	 * Executes after displaying the search form in the shotrcode sp_wp_display_list.
+	 *
+	 * @since 1.0.0
+	 */
 	do_action( 'sp_wp_plugin_after_display_data_table' );
 
 	return ob_get_clean();
@@ -353,8 +394,22 @@ function sp_wp_plugin_insert_data( $data ) {
 		$data['date_modified'] = current_time( 'mysql' );
 	}
 
+	/**
+	 * Filters the inserted data before it's saved to the database.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $data The data.
+	 */
 	$data = apply_filters( 'sp_wp_plugin_insert_data', $data );
 
+	/**
+	 * Executes before the data is inserted.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $data The data.
+	 */
 	do_action( 'sp_wp_plugin_before_insert_data', $data );
 
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery
@@ -364,7 +419,15 @@ function sp_wp_plugin_insert_data( $data ) {
 		array( '%s', '%s', '%d', '%s', '%s', '%s' )
 	);
 
-	do_action( 'sp_wp_plugin_after_insert_data', $data );
+	/**
+	 * Executes after the data is inserted.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array     $data The data.
+	 * @param int|false $id   The insert ID, or false on error.
+	 */
+	do_action( 'sp_wp_plugin_after_insert_data', $data, $wpdb->insert_id );
 
 	return ( false !== $result );
 }
