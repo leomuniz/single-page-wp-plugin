@@ -448,7 +448,9 @@ function sp_wp_plugin_register_api_routes() {
 		array(
 			'methods'             => 'POST',
 			'callback'            => 'sp_wp_plugin_api_insert_review',
-			'permission_callback' => '__return_true',
+			'permission_callback' => function () {
+				return current_user_can( 'publish_posts' );
+			},
 		)
 	);
 
